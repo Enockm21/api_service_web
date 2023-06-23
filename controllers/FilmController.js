@@ -90,11 +90,16 @@ exports.getFilmById = async (req, res) => {
 
 exports.filmCreate = (req, res) => {
     const errors = [];
+    const repo = new FilmsRepository(db);
+    const genreRepo = new GenresRepository(db);
+    const actorRepo = new ActorsRepository(db);
+
     ['name', 'synopsis', 'release_year', 'genre_id', 'actors'].forEach((field) => {
         if (!req.body[field]) {
             errors.push(`Field '${field}' is missing from request body`);
         }
     });
+
     if (errors.length) {
         res.status(400).json({
             success: false,
@@ -102,17 +107,31 @@ exports.filmCreate = (req, res) => {
         });
         return;
     }
+    // check if genre id exist in database
+    genreRepo.get(req.body.genre_id).then((data)=>{
+        if (!data) {
+            return  res.status(404).json({ error: `genre ${req.body.genre_id} does not exist` });
+            
+        }
+    })
 
-    const repo = new FilmsRepository(db);
-
+    //
+    req.body.actors.forEach((field) => {
+        actorRepo.get(field).then((data)=>{
+            if (!data) {
+                return  res.status(404).json({ error: `actor ${ field } does not exist` });
+                
+            }
+        })
+    });
+   
     repo.create({
         name: req.body.name,
         synopsis: req.body.synopsis,
         release_year: req.body.release_year,
         genre_id: req.body.genre_id,
 
-    })
-        .then(async (result) => {
+    }).then(async (result) => {
             await req.body.actors.forEach((actorId) => {
                 repo.addActorsFilm({ film_id: result, actor_id: actorId });
             });
@@ -121,10 +140,9 @@ exports.filmCreate = (req, res) => {
                     success: true,
                     id: result,
                 });
-        })
-        .catch((err) => {
+    }).catch((err) => {
             res.status(400).json({ error: err.message });
-        });
+    });
 };
 
 exports.filmUpdate = async (req, res) => {
