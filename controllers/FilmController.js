@@ -146,7 +146,7 @@ exports.filmUpdate = async (req, res) => {
     }
     // Verification de l'ETag
     repo.get(req.params.id).then(async (result) => {
-        if (Utils.checkETag(req, result)) {
+        if (Utils.checkETag(req, result, 'film')) {
             await repo.update(
                 req.params.id,
                 {

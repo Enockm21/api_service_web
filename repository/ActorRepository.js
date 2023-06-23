@@ -39,8 +39,8 @@ class ActorsRepository {
     create(data) {
         return new Promise((resolve, reject) => {
             this.database.run(
-                'INSERT INTO actors (name, synopsis, release_year, genre_id) VALUES (?,?,?,?)',
-                [data.name, data.synopsis, data.release_year, data.genre_id],
+                'INSERT INTO actors (first_name, last_name, date_of_birth, date_of_death) VALUES (?,?,?,?)',
+                [data.last_name, data.first_name, data.date_of_birth, data.date_of_death],
                 function (err) {
                     if (err) {
                         console.error(err.message);
@@ -57,12 +57,12 @@ class ActorsRepository {
         return new Promise((resolve, reject) => {
             this.database.run(
                 `UPDATE actors
-                 SET name = ?,
-                     synopsis = ?,
-                     release_year=?,
-                     genre_id=?
+                 SET first_name = ?,
+                     last_name = ?,
+                     date_of_birth = ?,
+                     date_of_death = ?
                  WHERE id = ?`,
-                [data.name, data.synopsis, data.release_year, data.genre_id, id],
+                [data.first_name, data.last_name, data.date_of_birth, data.date_of_death, id],
                 (err) => {
                     if (err) {
                         console.error(err.message);
