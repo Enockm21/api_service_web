@@ -12,7 +12,7 @@ const db = new sqlite3.Database(DBSOURCE, (errConnect) => {
         console.log('Connected to the SQLite database');
         /* const sql = 'DROP TABLE IF EXISTS genres';
         db.run('PRAGMA foreign_keys=ON', (err) => {
-            
+
             if (err) {
                 console.log(err);
             } else {
@@ -33,14 +33,14 @@ const db = new sqlite3.Database(DBSOURCE, (errConnect) => {
             )`,
             (errQuery) => {
                 if (errQuery) {
-                // Table already createda
-                    console.log(errQuery, '11');
+                // Table already created
+                    console.log(errQuery);
                 } else {
                 // Table just created, creating some rows
-                    const insert = 'INSERT INTO genres (name) VALUES (?)';
+                   /*  const insert = 'INSERT INTO genres (name) VALUES (?)';
                     db.run(insert, ['Drame']);
                     db.run(insert, ['Thriller']);
-                    db.run(insert, ['Action']);
+                    db.run(insert, ['Action']); */
                     console.log('db genres created')
 
                 }
@@ -67,12 +67,12 @@ const db = new sqlite3.Database(DBSOURCE, (errConnect) => {
             (errQuery) => {
                 if (errQuery) {
                 // Table already created
-                    console.log(errQuery, '22');
+                    console.log(errQuery);
                 } else {
                 // Table just created, creating some rows
-                    const insert = 'INSERT INTO films (name,synopsis,release_year,genre_id) VALUES (?,?,?,?)';
+                    /* const insert = 'INSERT INTO films (name,synopsis,release_year,genre_id) VALUES (?,?,?,?)';
                     db.run(insert, ['Top Gun', 'lorem ipsum....', 2022, 1]);
-                    db.run(insert, ['Top Gusasn', 'lorem ipsum....', 2022, 2]);
+                    db.run(insert, ['Top Gusasn', 'lorem ipsum....', 2022, 2]); */
                     console.log('db films created')
                 }
             },
@@ -92,9 +92,9 @@ const db = new sqlite3.Database(DBSOURCE, (errConnect) => {
                     console.log(errQuery, '23');
                 } else {
                     console.log('db actors created')
-                    const insert = 'INSERT INTO actors (first_name,last_name,date_of_birth,date_of_death) VALUES (?,?,?,?)';
+                    /* const insert = 'INSERT INTO actors (first_name,last_name,date_of_birth,date_of_death) VALUES (?,?,?,?)';
                     db.run(insert, ['Arnold', 'lorem ipsum....', new Date(), new Date()]);
-                    db.run(insert, ['ToM', 'lorem ipsum....', new Date(), new Date()]);
+                    db.run(insert, ['ToM', 'lorem ipsum....', new Date(), new Date()]); */
                 }
             },
         );
@@ -109,7 +109,7 @@ const db = new sqlite3.Database(DBSOURCE, (errConnect) => {
             (errQuery) => {
                 if (errQuery) {
                 // Table already created
-                    console.log(errQuery, '24');
+                    console.log(errQuery);
                 } else {
                     console.log('db films_actors created')
                 }

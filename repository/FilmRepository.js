@@ -124,6 +124,24 @@ class FilmsRepository {
             });
         });
     }
+    updateFilmActors(data) {
+        return new Promise((resolve, reject) => {
+            this.database.run(
+                `DELETE FROM films_actors
+                 WHERE film_id = ?`,
+                [data.film_id],
+                (err) => {
+                    if (err) {
+                        console.error(err.message);
+                        reject(err);
+                    } else {
+                        this.addActorsFilm(data)
+                        resolve();
+                    }
+                },
+            );
+            });
+    }
 }
 
 module.exports = FilmsRepository;

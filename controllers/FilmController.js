@@ -130,6 +130,7 @@ exports.filmCreate = (req, res) => {
 exports.filmUpdate = async (req, res) => {
     const repo = new FilmsRepository(db);
     const genreRepo = new GenresRepository(db);
+    const actorRepo = new ActorsRepository(db);
     const errors = [];
     ['name', 'synopsis', 'release_year', 'genre_id', 'actors'].forEach((field) => {
         if (!req.body[field]) {
@@ -155,15 +156,36 @@ exports.filmUpdate = async (req, res) => {
                     genre_id: req.body.genre_id,
                 },
             )
-                .then(() => {
+                .then(async () => {
+                    
                     repo.get(req.params.id)
                         .then(async (data) => {
-                            res.setHeader('ETag', Utils.generateETag(data));
-                            await res.json({
-                                success: true,
-                                // eslint-disable-next-line max-len
-                                data: { ...data, genre: await genreRepo.get(data.genre_id).then((genre) => genre) },
+                            await req.body.actors.forEach((actorId) => {
+                                repo.updateFilmActors({ film_id: req.params.id, actor_id: actorId })
                             });
+                            const genre = await genreRepo.get(data.genre_id).then((data) => data);
+                            actorRepo.list().then((actors) => {
+                                const allActors = actors;
+                                repo.getAllFilmActor().then((actorsFilms) => {
+                                    const filmActors = actorsFilms
+                                        .filter((entry) => entry.film_id === data.id)
+                                        .map((entry) => entry.actor_id);
+
+                                    // eslint-disable-next-line max-len
+                                    const filmActorsDetails = allActors.filter((actor) => filmActors.includes(actor.id));
+
+                                    res.setHeader('ETag', Utils.generateETag(data));
+                                    res.json({
+                                        success: true,
+                                        data: {
+                                            ...data,
+                                            genre: genre || null,
+                                            actors: filmActorsDetails || [],
+                                        },
+                                    });
+                                });
+                            });
+                           
                         });
                 })
                 .catch((err) => {
