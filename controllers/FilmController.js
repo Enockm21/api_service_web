@@ -72,7 +72,7 @@ exports.getFilmById = async (req, res) => {
                 // eslint-disable-next-line max-len
                 const filmActorsDetails = allActors.filter((actor) => filmActors.includes(actor.id));
 
-                res.setHeader('ETag', Utils.generateETag(result));
+                res.setHeader('ETag', Utils.generateETag(result, 'film'));
                 res.json({
                     success: true,
                     data: {
@@ -115,7 +115,7 @@ exports.filmCreate = (req, res) => {
         }
     })
 
-    //
+    // check if actor id exist in database
     req.body.actors.forEach((field) => {
         actorRepo.get(field).then((data)=>{
             if (!data) {
@@ -162,6 +162,23 @@ exports.filmUpdate = async (req, res) => {
         });
         return;
     }
+    // check if genre id exist in database
+    genreRepo.get(req.body.genre_id).then((data)=>{
+        if (!data) {
+            return  res.status(404).json({ error: `genre ${req.body.genre_id} does not exist` });
+            
+        }
+    })
+
+    // check if actor id exist in database
+    req.body.actors.forEach((field) => {
+        actorRepo.get(field).then((data)=>{
+            if (!data) {
+                return  res.status(404).json({ error: `actor ${ field } does not exist` });
+                
+            }
+        })
+    });
     // Verification de l'ETag
     repo.get(req.params.id).then(async (result) => {
         if (Utils.checkETag(req, result, 'film')) {
@@ -191,8 +208,6 @@ exports.filmUpdate = async (req, res) => {
 
                                     // eslint-disable-next-line max-len
                                     const filmActorsDetails = allActors.filter((actor) => filmActors.includes(actor.id));
-
-                                    res.setHeader('ETag', Utils.generateETag(data));
                                     res.json({
                                         success: true,
                                         data: {
